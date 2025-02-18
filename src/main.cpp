@@ -166,6 +166,10 @@ int main() {
       level.MovePlayer(0, -1);
     }
 
+    if (IsKeyPressed(KEY_R)) {
+      level.InitGrid();
+    }
+
     BeginDrawing();
     level.Draw();
     EndDrawing();
