@@ -28,6 +28,14 @@ using LevelArray =
 
 class Level {
 private:
+  int height, width;
+  int player_xInit, player_yInit;
+  int player_x, player_y;
+  Tile player_replaceTileInit;
+  Tile player_replaceTile;
+  LevelArray gridInit;
+  LevelArray grid;
+
   bool MoveBox(int pos_x, int pos_y, int dir_x, int dir_y, Tile currentTile) {
     int target_x{pos_x + dir_x};
     int target_y{pos_y + dir_y};
@@ -53,13 +61,10 @@ private:
   }
 
 public:
-  int height, width;
-  int player_x, player_y;
-  Tile player_replaceTile;
-  LevelArray grid;
-
   Level()
-      : height{0}, width{0}, player_x{0}, player_y{0},
+      : height{0}, width{0}, player_xInit{0}, player_yInit{0},
+        player_replaceTileInit(Tile::none), gridInit{Tile::none},
+        player_x{0}, player_y{0},
         player_replaceTile(Tile::none), grid{Tile::none} {}
 
   void AddRow(std::string row_string) {
@@ -69,15 +74,22 @@ public:
 
     int x{0};
     for (char c : row_string) {
-      grid[height][x] = charmap.at(c);
+      gridInit[height][x] = charmap.at(c);
       if (c == '@' || c == '+') {
-        player_x = x;
-        player_y = height;
-        if (c == '+') player_replaceTile = Tile::goal;
+        player_xInit = x;
+        player_yInit = height;
+        if (c == '+') player_replaceTileInit = Tile::goal;
       }
       x++;
     }
     height++;
+  }
+
+  void InitGrid() {
+    player_x = player_xInit;
+    player_y = player_yInit;
+    player_replaceTile = player_replaceTileInit;
+    grid = gridInit;
   }
 
   void Draw() {
@@ -137,6 +149,8 @@ int main() {
   while (std::getline(levelFile, rowString))
     level.AddRow(rowString);
 
+  level.InitGrid();
+
   InitWindow(1000, 800, "raygui test");
   SetTargetFPS(60);
 
@@ -150,6 +164,10 @@ int main() {
       level.MovePlayer(0, 1);
     } else if (IsKeyPressed(KEY_UP)) {
       level.MovePlayer(0, -1);
+    }
+
+    if (IsKeyPressed(KEY_R)) {
+      level.InitGrid();
     }
 
     BeginDrawing();
