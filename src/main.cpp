@@ -8,19 +8,23 @@
 #include "raygui.h"
 
 #include "level.hpp"
+#include "loading.hpp"
 
 int main() {
   Level level{};
+  int levelNumber{1};
 
-  std::ifstream levelFile{"level.txt"};
+  std::ifstream levelFile;
+  levelFile.open("microban.txt");
 
   if (!levelFile) {
     std::cerr << "Failed to open level file\n";
     return 1;
   }
 
-  std::string rowString{};
-  while (std::getline(levelFile, rowString))
+  RowStrings rowStrings = ParseLevelFile(levelFile)[levelNumber];
+
+  for (std::string rowString : rowStrings) 
     level.AddRow(rowString);
 
   level.InitGrid();
@@ -52,3 +56,4 @@ int main() {
   CloseWindow();
   return 0;
 }
+
