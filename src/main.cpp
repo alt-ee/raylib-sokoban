@@ -9,7 +9,7 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-#include "constants.h"
+#include "constants.hpp"
 
 enum class Tile { none, wall, box, player, goal, box_goal, player_goal };
 
