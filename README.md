@@ -10,3 +10,6 @@ My goals for this project are:
 - Learn the raylib library
 - Practice git/github workflows, making proper use of issues, PRs etc.
 - Have a working sokoban engine that can import level packs from the sokoban community.
+
+[Building](docs/BUILDING.md)
+[Contributing](docs/CONTRIBUTING.md)
