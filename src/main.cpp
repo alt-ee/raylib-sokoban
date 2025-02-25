@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "raylib.h"
@@ -8,19 +9,38 @@
 #include "raygui.h"
 
 #include "level.hpp"
+#include "loading.hpp"
 
-int main() {
+int main(int argc, char* argv[]) {
   Level level{};
+  int levelNumber{0}; // Default to first level if no argument provided
 
-  std::ifstream levelFile{"level.txt"};
+  std::ifstream levelFile;
 
-  if (!levelFile) {
-    std::cerr << "Failed to open level file\n";
+  if (argc > 1)
+    levelFile.open(argv[1]);
+  else {
+    std::cerr << "No level file provided!\n";
     return 1;
   }
 
-  std::string rowString{};
-  while (std::getline(levelFile, rowString))
+  if (argc > 3)
+  {
+    std::stringstream convert{argv[3]};
+    if(!(convert >> levelNumber))
+      std::cerr << "Non-numeric argument provided for level number!\n";
+    else
+      levelNumber--;
+  }
+  
+  if (!levelFile) {
+    std::cerr << "Failed to open level file " << argv[1] << "\n";
+    return 1;
+  }
+
+  RowStrings rowStrings = ParseLevelFile(levelFile)[levelNumber];
+
+  for (std::string rowString : rowStrings) 
     level.AddRow(rowString);
 
   level.InitGrid();
@@ -52,3 +72,4 @@ int main() {
   CloseWindow();
   return 0;
 }
+

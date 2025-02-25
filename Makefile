@@ -28,5 +28,5 @@ clean:
 	rm -rf $(BDIR)/*
 
 run: build
-	./$(BDIR)/$(EXECUTEABLE)
+	./$(BDIR)/$(EXECUTEABLE) microban.txt
 
