@@ -2,22 +2,15 @@
 
 #include <map>
 
-#include "raylib.h"
-
 const std::map<char, Tile> charmap{
     {' ', Tile::none},       {'#', Tile::wall}, {'$', Tile::box},
     {'@', Tile::player},     {'.', Tile::goal}, {'*', Tile::box_goal},
     {'+', Tile::player_goal}};
 
-const std::map<Tile, Color> tilemap{
-    {Tile::none, LIGHTGRAY},    {Tile::wall, DARKGRAY}, {Tile::box, BROWN},
-    {Tile::player, RED},        {Tile::goal, YELLOW},   {Tile::box_goal, GREEN},
-    {Tile::player_goal, ORANGE}};
-
 Level::Level()
-    : height{0}, width{0}, player_xInit{0}, player_yInit{0},
+    : height_{0}, width_{0}, player_xInit{0}, player_yInit{0},
       player_replaceTileInit(Tile::none), gridInit{Tile::none}, player_x{0},
-      player_y{0}, player_replaceTile(Tile::none), grid{Tile::none} {}
+      player_y{0}, player_replaceTile(Tile::none), grid_{Tile::none} {}
 
 bool Level::MoveBox(int pos_x, int pos_y, int dir_x, int dir_y,
                     Tile currentTile) {
@@ -31,59 +24,49 @@ bool Level::MoveBox(int pos_x, int pos_y, int dir_x, int dir_y,
     replaceTile = Tile::none;
   }
 
-  if (grid[target_y][target_x] == Tile::none) {
-    grid[target_y][target_x] = Tile::box;
-  } else if (grid[target_y][target_x] == Tile::goal) {
-    grid[target_y][target_x] = Tile::box_goal;
+  if (grid_[target_y][target_x] == Tile::none) {
+    grid_[target_y][target_x] = Tile::box;
+  } else if (grid_[target_y][target_x] == Tile::goal) {
+    grid_[target_y][target_x] = Tile::box_goal;
   } else {
     return false;
   }
 
-  grid[pos_y][pos_x] = replaceTile;
+  grid_[pos_y][pos_x] = replaceTile;
 
   return true;
 }
 
 void Level::AddRow(std::string row_string) {
-  if (row_string.size() > width) {
-    width = row_string.size();
+  if (row_string.size() > width_) {
+    width_ = row_string.size();
   }
 
   int x{0};
   for (char c : row_string) {
-    gridInit[height][x] = charmap.at(c);
+    gridInit[height_][x] = charmap.at(c);
     if (c == '@' || c == '+') {
       player_xInit = x;
-      player_yInit = height;
+      player_yInit = height_;
       if (c == '+')
         player_replaceTileInit = Tile::goal;
     }
     x++;
   }
-  height++;
+  height_++;
 }
 
 void Level::InitGrid() {
   player_x = player_xInit;
   player_y = player_yInit;
   player_replaceTile = player_replaceTileInit;
-  grid = gridInit;
-}
-
-void Level::Draw() {
-  for (int x = 0; x < width; x++) {
-    for (int y = 0; y < height; y++) {
-      DrawRectangle(x * constants::tile_width, y * constants::tile_height,
-                    constants::tile_width, constants::tile_height,
-                    tilemap.at(grid[y][x]));
-    }
-  }
+  grid_ = gridInit;
 }
 
 void Level::MovePlayer(int dir_x, int dir_y) {
   int target_x{player_x + dir_x};
   int target_y{player_y + dir_y};
-  Tile target_tile{grid[target_y][target_x]};
+  Tile target_tile{grid_[target_y][target_x]};
 
   if (target_tile == Tile::box || target_tile == Tile::box_goal) {
     if (!MoveBox(target_x, target_y, dir_x, dir_y, target_tile))
@@ -100,12 +83,12 @@ void Level::MovePlayer(int dir_x, int dir_y) {
     target_replaceTile = Tile::player_goal;
   }
 
-  grid[player_y][player_x] = player_replaceTile;
+  grid_[player_y][player_x] = player_replaceTile;
 
   // If a box was pushed above, the value of target_tile is no longer valid,
   // so we need to re-access the target destination to set player_replaceTile
-  player_replaceTile = grid[target_y][target_x];
-  grid[target_y][target_x] = target_replaceTile;
+  player_replaceTile = grid_[target_y][target_x];
+  grid_[target_y][target_x] = target_replaceTile;
   player_x = target_x;
   player_y = target_y;
 

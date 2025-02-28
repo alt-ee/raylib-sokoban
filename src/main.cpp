@@ -10,6 +10,7 @@
 
 #include "level.hpp"
 #include "loading.hpp"
+#include "graphics.hpp"
 
 int main(int argc, char* argv[]) {
   Level level{};
@@ -65,7 +66,7 @@ int main(int argc, char* argv[]) {
     }
 
     BeginDrawing();
-    level.Draw();
+    DrawLevel(level.grid(), level.width(), level.height());
     EndDrawing();
   }
 
